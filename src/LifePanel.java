@@ -2,9 +2,13 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
 
 //SETTINGS FOR PANEL
-public class LifePanel extends JPanel implements ActionListener, MouseListener, MouseMotionListener {
+public class LifePanel extends JPanel implements ActionListener, MouseListener,
+        MouseMotionListener, KeyListener {
 
     int xPanel = 1300;
     int yPanel = 700;
@@ -26,9 +30,11 @@ public class LifePanel extends JPanel implements ActionListener, MouseListener, 
 
         addMouseListener(this);
         addMouseMotionListener(this);
+        addKeyListener(this);
+        setFocusable(true);
 
         time = new Timer(80, this);
-        time.start();
+        //time.start();
 
     }
 
@@ -38,7 +44,6 @@ public class LifePanel extends JPanel implements ActionListener, MouseListener, 
         super.paintComponent(g);
         setBackground(Color.BLACK);
         grid(g);
-        spawn(g);
         display(g);
 
     }
@@ -55,20 +60,18 @@ public class LifePanel extends JPanel implements ActionListener, MouseListener, 
 
     }
 
-    private void spawn(Graphics g) {
+    private void spawn() {
 
-        if (starts) {
 
-            for (int x = 0; x < life.length; x++) {
-                for (int y = 0; y < (yHeight); y++) {
+        for (int x = 0; x < life.length; x++) {
+            for (int y = 0; y < (yHeight); y++) {
 
-                    if ((int) (Math.random() * 5) == 0) {
-                        beforeLife[x][y] = 1; //true
-                    }
+                if ((int) (Math.random() * 5) == 0) {
+                    beforeLife[x][y] = 1; //true
                 }
             }
 
-            starts = false; //Otherwise the spawning continues.
+
         }
 
     }
@@ -125,6 +128,15 @@ public class LifePanel extends JPanel implements ActionListener, MouseListener, 
 
     }
 
+    private void clear() {
+        for (int x = 0; x < life.length; x++) {
+            for (int y = 0; y < (yHeight); y++) {
+                beforeLife[x][y] = 0;
+            }
+        }
+    }
+
+
     public void actionPerformed(ActionEvent e) {
 
         int alive;
@@ -153,10 +165,9 @@ public class LifePanel extends JPanel implements ActionListener, MouseListener, 
         int x = e.getX() / size;
         int y = e.getY() / size;
 
-        if(life[x][y] == 0 && initial == 0) {
+        if (life[x][y] == 0 && initial == 0) {
             beforeLife[x][y] = 1;
-        }
-        else if(life[x][y] == 1 && initial == 1) {
+        } else if (life[x][y] == 1 && initial == 1) {
             beforeLife[x][y] = 0;
         }
         repaint();
@@ -170,7 +181,6 @@ public class LifePanel extends JPanel implements ActionListener, MouseListener, 
     public void mouseClicked(MouseEvent e) {
 
 
-
     }
 
     public void mouseEntered(MouseEvent e) {
@@ -180,23 +190,52 @@ public class LifePanel extends JPanel implements ActionListener, MouseListener, 
     public void mouseExited(MouseEvent e) {
 
     }
+
     public void mousePressed(MouseEvent e) {
 
-        time.stop();
+
         int x = e.getX() / size;
         int y = e.getY() / size;
 
-        if(life[x][y] == 0) {
+        if (life[x][y] == 0) {
             initial = 0;
-        }
-        else{
+        } else {
             initial = 1;
         }
 
     }
+
     public void mouseReleased(MouseEvent e) {
         initial = -1;
-        time.start();
+
+    }
+
+    public void keyPressed(KeyEvent e) {
+
+        int code = e.getKeyCode();
+        if (code == e.VK_R) {
+            spawn();
+            time.start();
+        } else if (code == e.VK_C) {
+            clear();
+            time.stop();
+        }
+        else if (code == e.VK_S){
+            time.start();
+        }
+        else if(code == e.VK_A){
+            time.stop();
+        }
+
+        repaint();
+    }
+
+    public void keyTyped(KeyEvent e) {
+
+    }
+
+    public void keyReleased(KeyEvent e) {
+
     }
 
 
